@@ -38,15 +38,39 @@
     "fullscreen": true,
     "force_grab_cursor": true,
     "mangohud": true
-  }
-  "1280x720@60 (BitCraft Online)": {
-    "filter": "bitcraft",
+  },
+  "Sunshine": {
+    "tags": [ "bitcraft" ],
+    "env": "SDL_VIDEODRIVER=x11",
     "backend": "sdl",
     "resolution_w": "1280",
     "resolution_h": "720",
     "refresh_rate": "60",
+    "fullscreen": true,
+    "force_grab_cursor": false,
+    "mangohud": false 
+  },
+  "Windowed": {
+    "tags": [ "bitcraft" ],
+    "env": "SDL_VIDEODRIVER=x11",
+    "backend": "sdl",
+    "resolution_w": "1280",
+    "resolution_h": "720",
+    "refresh_rate": "75",
     "fullscreen": false,
     "force_grab_cursor": false,
-    "mangohud": false
+    "mangohud": false 
+  },
+  "Fullscreen": {
+    "tags": [ "bitcraft" ],
+    "env": "SDL_VIDEODRIVER=x11",
+    "backend": "sdl",
+    "resolution_w": "2560",
+    "resolution_h": "1080",
+    "refresh_rate": "75",
+    "fullscreen": true,
+    "force_grab_cursor": false,
+    "mangohud": false 
   }
+
 }

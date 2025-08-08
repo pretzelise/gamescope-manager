@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import subprocess
 import sys
 import os
@@ -49,8 +50,38 @@ def run_zenity(config_object):
     return user_choice.stdout.decode('utf-8').strip()
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="Gamescope Manager", description="A quick and dirty python script to manage multiple gamescope configurations")
+    parser.add_argument('-t', '--tags', nargs="+")
+    parser.add_argument('-i', '--include-untagged', action="store_true")
+
+    args = parser.parse_args()
+    if (args.include_untagged and args.tags == None):
+        parser.error("-i has no effect without specifying tags")
+
+    config_list = {}
+    if args.tags != None:
+        for key in config_data.keys():
+            current_key = config_data.get(key)
+            current_tags = current_key.get("tags")
+
+            if current_tags != None:
+                if any(x in current_tags for x in args.tags):
+                    config_list.update({key: current_key})
+            elif args.include_untagged == True:
+                config_list.update({key: current_key})
+    else:
+        for key in config_data.keys():
+            current_key = config_data.get(key)
+            current_tags = current_key.get("tags")
+
+            if current_tags == None:
+                config_list.update({key: current_key})
+
+    config_data = config_list
+
     user_choice = run_zenity(config_data)
-    if user_choice == "Quit":
+
+    if user_choice in ["Quit", ""]:
         sys.stdout.write("true") # prepending the 'true' bash built-in is a great solution to cancel a game launch in steam as 'true' will eat all subsequent arguments provided
     else:
         selected_config = config_data.get(user_choice)
