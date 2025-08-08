@@ -7,7 +7,8 @@ import os
 import json
 
 # load config file
-with open('/home/elise/.config/gamescope-manager/config.json', 'r') as config_file:
+home_path = os.path.expanduser('~')
+with open(f'{home_path}/.config/gamescope-manager/config.json', 'r') as config_file:
     config_data = json.load(config_file)
 
 
