@@ -2,14 +2,14 @@
 
 A very quickly put-together python script to help manage multiple gamescope configurations and select one before launching a game via Steam.
 
-###Installation
+### Installation
 
 1. Move `gamescope-manager` to somewhere in your `$PATH`
 2. Run `cp -r .config/gamescope-manager ~/.config/gamescope-manager` to copy the config file into your home folder
 3. Done!
 
 
-###Usage
+### Usage
 
 Edit `~/.config/gamescope-manager/config.json` to add, remove, or change your list of available configurations. I have included an example config for your reference.
 
