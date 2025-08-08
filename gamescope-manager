@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+
+import subprocess
+import sys
+import os
+import json
+
+# load config file
+with open('/home/elise/.config/gamescope-manager/config.json', 'r') as config_file:
+    config_data = json.load(config_file)
+
+
+def construct_gamescope(config_object):
+    output = "gamescope"
+    for key, value in config_object.items():
+        match key:
+            case "env":
+                output = f"env {value} " + output
+            case "backend":
+                output += f" --backend {value}"
+            case "resolution_w":
+                output += f" -W {value}"
+            case "resolution_h":
+                output += f" -H {value}"
+            case "refresh_rate":
+                output += f" -r {value}"
+            case "fullscreen":
+                if value == True:
+                    output += f" -f"
+            case "force_grab_cursor":
+                if value == True:
+                    output += f" --force-grab-cursor"
+            case "mangohud":
+                if value == True:
+                    output += f" --mangoapp"
+
+    return (output + " --")
+
+def run_zenity(config_object):
+    zenity_env = os.environ.copy()
+    zenity_env["LD_PRELOAD"] = "/usr/lib/libcurl.so"
+    zenity_cmd = ["/usr/bin/zenity", "--question", "--switch", "--title", "Gamescope Manager", "--text", "Please select a gamescope mode", "--extra-button", "Quit"]
+
+    for key in reversed(config_object.keys()):
+        zenity_cmd.append("--extra-button")
+        zenity_cmd.append(key)
+
+    user_choice = subprocess.run(zenity_cmd, env=zenity_env, stdout=subprocess.PIPE)
+    return user_choice.stdout.decode('utf-8').strip()
+
+if __name__ == "__main__":
+    user_choice = run_zenity(config_data)
+    if user_choice == "Quit":
+        sys.stdout.write("true") # prepending the 'true' bash built-in is a great solution to cancel a game launch in steam as 'true' will eat all subsequent arguments provided
+    else:
+        selected_config = config_data.get(user_choice)
+        gamescope_output = construct_gamescope(selected_config)
+        sys.stdout.write(gamescope_output) # output a properly formatted gamescope command to be passed to steam
