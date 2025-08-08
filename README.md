@@ -6,7 +6,8 @@ A very quickly put-together python script to help manage multiple gamescope conf
 
 1. Move `gamescope-manager` to somewhere in your `$PATH`
 2. Run `cp -r .config/gamescope-manager ~/.config/gamescope-manager` to copy the config file into your home folder
-3. Done!
+3. Make sure you have `zenity` installed (it should be available at `/usr/bin/zenity`)
+4. Done!
 
 
 ### Usage
