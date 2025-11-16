@@ -1,5 +1,7 @@
 {
   "3440x1440@160": {
+    "pre_cmd": ["notify-send", "Gamescope", "Game is starting!"],
+    "post_cmd": ["notify-send", "Gamescope", "Game has exited!"],
     "env": "SDL_VIDEODRIVER=x11",
     "backend": "sdl",
     "resolution_w": "3440",
@@ -10,6 +12,8 @@
     "mangohud": false
   },
   "2560x1080@75": {
+    "pre_cmd": ["notify-send", "Gamescope", "Game is starting!"],
+    "post_cmd": ["notify-send", "Gamescope", "Game has exited!"],
     "env": "SDL_VIDEODRIVER=x11",
     "backend": "sdl",
     "resolution_w": "2560",
@@ -40,37 +44,31 @@
     "mangohud": true
   },
   "Sunshine": {
-    "tags": [ "bitcraft" ],
-    "env": "SDL_VIDEODRIVER=x11",
-    "backend": "sdl",
+    "tags": ["remote", "fullscreen"],
     "resolution_w": "1280",
     "resolution_h": "720",
     "refresh_rate": "60",
     "fullscreen": true,
-    "force_grab_cursor": false,
-    "mangohud": false 
+    "force_grab_cursor": true,
+    "mangohud": false
   },
   "Windowed": {
-    "tags": [ "bitcraft" ],
-    "env": "SDL_VIDEODRIVER=x11",
-    "backend": "sdl",
+    "tags": ["windowed"],
+    "backend": "x11",
     "resolution_w": "1280",
     "resolution_h": "720",
     "refresh_rate": "75",
     "fullscreen": false,
     "force_grab_cursor": false,
-    "mangohud": false 
+    "mangohud": false
   },
   "Fullscreen": {
-    "tags": [ "bitcraft" ],
-    "env": "SDL_VIDEODRIVER=x11",
-    "backend": "sdl",
+    "tags": ["remote", "fullscreen", "not-windowed"],
     "resolution_w": "2560",
     "resolution_h": "1080",
     "refresh_rate": "75",
     "fullscreen": true,
     "force_grab_cursor": false,
-    "mangohud": false 
+    "mangohud": false
   }
-
 }

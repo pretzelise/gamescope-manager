@@ -5,12 +5,31 @@ import subprocess
 import sys
 import os
 import json
+import re
 
 # load config file
 home_path = os.path.expanduser('~')
 with open(f'{home_path}/.config/gamescope-manager/config.json', 'r') as config_file:
     config_data = json.load(config_file)
 
+def run_pre_cmd(config_object):
+    for key, value in config_object.items():
+        match key:
+            case "pre_cmd":
+                subprocess.run(value, stdout=subprocess.DEVNULL)
+
+def run_post_cmd_watcher(gamescope_output, config_object):
+    if gamescope_output.startswith("env "):
+        gamescope_output = gamescope_output[4:]
+        env_var_pattern = r'\b\w+=(?:\"[^\"]*\"|\S+)'
+        gamescope_output = re.sub(env_var_pattern, '', gamescope_output).strip()
+
+    for key, value in config_object.items():
+        match key:
+            case "post_cmd":
+                command = [f"{home_path}/.config/gamescope-manager/gamescope-post-cmd.sh", f'{gamescope_output}']
+                command.extend(value)
+                subprocess.Popen(command, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 def construct_gamescope(config_object):
     output = "gamescope"
@@ -38,16 +57,18 @@ def construct_gamescope(config_object):
 
     return (output + " --")
 
-def run_zenity(config_object):
-    zenity_env = os.environ.copy()
-    zenity_env["LD_PRELOAD"] = "/usr/lib/libcurl.so"
-    zenity_cmd = ["/usr/bin/zenity", "--question", "--switch", "--title", "Gamescope Manager", "--text", "Please select a gamescope mode", "--extra-button", "Quit"]
+def run_fuzzel(config_object):
+    fuzzel_cmd = ["fuzzel", "-d", "--minimal-lines", "--hide-prompt"]
+    menu_options = []
+    
+    for key in config_object.keys():
+        menu_options.append(key)
 
-    for key in reversed(config_object.keys()):
-        zenity_cmd.append("--extra-button")
-        zenity_cmd.append(key)
+    fuzzel_cmd.append("-w")
+    fuzzel_cmd.append(str(len(max(menu_options, key=len))))
 
-    user_choice = subprocess.run(zenity_cmd, env=zenity_env, stdout=subprocess.PIPE)
+    subprocess_printf = subprocess.Popen(["printf", '\\n'.join(menu_options)], stdout=subprocess.PIPE)
+    user_choice = subprocess.run(fuzzel_cmd, stdin=subprocess_printf.stdout, stdout=subprocess.PIPE)
     return user_choice.stdout.decode('utf-8').strip()
 
 if __name__ == "__main__":
@@ -80,11 +101,14 @@ if __name__ == "__main__":
 
     config_data = config_list
 
-    user_choice = run_zenity(config_data)
+    user_choice = run_fuzzel(config_data)
 
-    if user_choice in ["Quit", ""]:
+
+    if user_choice == "":
         sys.stdout.write("true") # prepending the 'true' bash built-in is a great solution to cancel a game launch in steam as 'true' will eat all subsequent arguments provided
     else:
         selected_config = config_data.get(user_choice)
+        run_pre_cmd(selected_config) 
         gamescope_output = construct_gamescope(selected_config)
+        run_post_cmd_watcher(gamescope_output, selected_config)
         sys.stdout.write(gamescope_output) # output a properly formatted gamescope command to be passed to steam
