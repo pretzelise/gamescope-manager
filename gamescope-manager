@@ -29,7 +29,8 @@ def run_post_cmd_watcher(gamescope_output, config_object):
             case "post_cmd":
                 command = [f"{home_path}/.config/gamescope-manager/gamescope-post-cmd.sh", f'{gamescope_output}']
                 command.extend(value)
-                subprocess.Popen(command, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                steam_env = os.environ.copy()
+                subprocess.Popen(command, env=steam_env, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 def construct_gamescope(config_object):
     output = "gamescope"
