@@ -27,16 +27,18 @@ def run_post_cmd_watcher(gamescope_output, config_object):
     for key, value in config_object.items():
         match key:
             case "post_cmd":
-                command = [f"{home_path}/.config/gamescope-manager/gamescope-post-cmd.sh", f'{gamescope_output}']
+                command = [f"{home_path}/.config/gamescope-manager/gamescope-post-cmd.sh", f'{construct_gamescope(config_object, True)}']
                 command.extend(value)
                 steam_env = os.environ.copy()
                 subprocess.Popen(command, env=steam_env, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
-def construct_gamescope(config_object):
+def construct_gamescope(config_object, exclude_env=False):
     output = "gamescope"
     for key, value in config_object.items():
         match key:
             case "env":
+                if exclude_env == True:
+                    continue
                 output = f"env {value} " + output
             case "backend":
                 output += f" --backend {value}"
